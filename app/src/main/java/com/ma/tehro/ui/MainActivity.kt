@@ -3,15 +3,19 @@ package com.ma.tehro.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -42,12 +46,7 @@ class MainActivity : ComponentActivity() {
             TehroTheme {
                 val navController = rememberNavController()
                 NavHost(navController, startDestination = LinesScreen) {
-                    composable<LinesScreen>(
-                        enterTransition = { defaultEnterTransition() },
-                        exitTransition = { defaultExitTransition() },
-                        popEnterTransition = { defaultEnterTransition() },
-                        popExitTransition = { defaultExitTransition() }
-                    ) {
+                    animateComposable<LinesScreen> {
                         val metroViewModel: LineViewModel = hiltViewModel(it)
                         Lines(
                             navController = navController,
@@ -57,12 +56,7 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
-                    composable<StationsScreen>(
-                        enterTransition = { defaultEnterTransition() },
-                        exitTransition = { defaultExitTransition() },
-                        popEnterTransition = { defaultEnterTransition() },
-                        popExitTransition = { defaultExitTransition() }
-                    ) { backStackEntry ->
+                    animateComposable<StationsScreen> { backStackEntry ->
                         val metroViewModel: LineViewModel = hiltViewModel(backStackEntry)
                         val args = backStackEntry.toRoute<StationsScreen>()
                         Stations(
@@ -71,12 +65,7 @@ class MainActivity : ComponentActivity() {
                             onBackClick = { navController.popBackStack() }
                         )
                     }
-                    composable<StationSelectorScreen>(
-                        enterTransition = { defaultEnterTransition() },
-                        exitTransition = { defaultExitTransition() },
-                        popEnterTransition = { defaultEnterTransition() },
-                        popExitTransition = { defaultExitTransition() }
-                    ) { backStackEntry ->
+                    animateComposable<StationSelectorScreen> { backStackEntry ->
                         val viewModel: ShortestPathViewModel = hiltViewModel(backStackEntry)
                         StationSelector(
                             stations = viewModel.stations.map { it.value.property.name },
@@ -90,12 +79,7 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
-                    composable<PathFinderScreen>(
-                        enterTransition = { defaultEnterTransition() },
-                        exitTransition = { defaultExitTransition() },
-                        popEnterTransition = { defaultEnterTransition() },
-                        popExitTransition = { defaultExitTransition() }
-                    ) { backStackEntry ->
+                    animateComposable<PathFinderScreen> { backStackEntry ->
                         val viewModel: ShortestPathViewModel = hiltViewModel(backStackEntry)
                         val args: PathFinderScreen = backStackEntry.toRoute()
                         PathFinder(
@@ -122,6 +106,19 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+}
+
+inline fun <reified T : Any> NavGraphBuilder.animateComposable(
+    noinline content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit
+) {
+    this.composable<T>(
+        enterTransition = { defaultEnterTransition() },
+        exitTransition = { defaultExitTransition() },
+        popEnterTransition = { defaultEnterTransition() },
+        popExitTransition = { defaultExitTransition() }
+    ) {
+        content(it)
     }
 }
 
