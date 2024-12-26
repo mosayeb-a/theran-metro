@@ -8,7 +8,10 @@ import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
+import com.ma.tehro.data.Station
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.serialization.json.Json
+import java.io.File
 
 
 data class AppCoroutineDispatchers(
@@ -54,4 +57,12 @@ fun getLineColor(lineNumber: Int): Color {
         7 -> Color(android.graphics.Color.parseColor("#7F0B74"))
         else -> Color.Gray
     }
+}
+
+fun readJsonStationsAsText(fileName: String): MutableMap<String, Station> {
+    val path =
+        "/home/mosayeb/MyAndroidStuff/AndroidProjects/RealeaseVersion/tehro/app/src/main/res/raw/$fileName.json"
+    val file = File(path).readText(Charsets.UTF_8)
+    val stations: MutableMap<String, Station> = Json.decodeFromString(file)
+    return stations
 }

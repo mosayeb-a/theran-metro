@@ -52,7 +52,7 @@ fun Lines(
             FloatingActionButton(
                 modifier = Modifier.size(62.dp),
                 onClick = onFindPathClicked,
-                containerColor = MaterialTheme.colorScheme.secondary,
+                containerColor = MaterialTheme.colorScheme.primary,
                 shape = FloatingActionButtonDefaults.largeShape,
             ) {
                 Icon(

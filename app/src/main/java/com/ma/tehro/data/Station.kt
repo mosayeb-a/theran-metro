@@ -2,30 +2,23 @@ package com.ma.tehro.data
 
 import kotlinx.serialization.Serializable
 
-
 @Serializable
-data class StationData(
-    val property: StationProperty,
-    val relations: List<StationRelation>
-)
-
-@Serializable
-data class StationProperty(
+data class Station(
     val name: String,
-    var positionsInLine: List<PositionInLine> = emptyList(),
     val fa: String,
-    var colors: List<String>,
     val lines: List<Int>,
+    val positionsInLine: List<PositionInLine> = emptyList(),
+    val longitude: String ? = null,
+    val latitude: String ? = null,
+    val address: String ? = null,
+    val colors: List<String> = emptyList(),
     val disabled: Boolean,
-)
-
-@Serializable
-data class StationRelation(
-    val name: String,
-    val fa: String,
-    var colors: List<String>,
-    val lines: List<Int>,
-    val disabled: Boolean
+    val wc: Boolean? = null,
+    val coffeeShop: Boolean ? = null,
+    val groceryStore: Boolean ? = null,
+    val fastFood: Boolean ? = null,
+    val atm: Boolean ? = null,
+    val relations: List<String> = emptyList()
 )
 
 @Serializable

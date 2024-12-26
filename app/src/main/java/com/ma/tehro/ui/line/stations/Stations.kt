@@ -37,12 +37,12 @@ import com.ma.tehro.common.getLineColor
 import com.ma.tehro.common.getLineEndpoints
 import com.ma.tehro.common.timelineview.TimelineView
 import com.ma.tehro.common.timelineview.TimelineView.SingleNode
-import com.ma.tehro.data.StationData
+import com.ma.tehro.data.Station
 
 @Composable
 fun Stations(
     lineNumber: Int,
-    orderedStations: List<StationData>,
+    orderedStations: List<Station>,
     onBackClick: () -> Unit = {},
 ) {
     val lineColor = remember { getLineColor(lineNumber) }
@@ -68,7 +68,7 @@ fun Stations(
 @Composable
 fun StationList(
     modifier: Modifier = Modifier,
-    stations: List<StationData>,
+    stations: List<Station>,
     lineColor: Color
 ) {
     val configuration = LocalConfiguration.current
@@ -83,7 +83,7 @@ fun StationList(
     ) {
         itemsIndexed(
             stations,
-            key = { _, station -> station.property.name }) { index, station ->
+            key = { _, station -> station.name }) { index, station ->
 
             val nodeType = when (index) {
                 0 -> TimelineView.NodeType.FIRST
@@ -127,14 +127,14 @@ fun StationList(
 @Composable
 fun StationItem(
     modifier: Modifier = Modifier,
-    station: StationData,
+    station: Station,
     itemHeight: Float,
     lineColor: Color
 ) {
     val lineColorString = "#${Integer.toHexString(lineColor.toArgb()).uppercase()}"
 
     val normalizedLineColorString = lineColorString.takeLast(6)
-    val colors: List<String> = station.property.colors
+    val colors: List<String> = station.colors
         .map { it.takeLast(6) }
         .filter { it != normalizedLineColorString }
 
@@ -152,7 +152,7 @@ fun StationItem(
     ) {
 
         Text(
-            text = station.property.name,
+            text = station.name,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = Color.White

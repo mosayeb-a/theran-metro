@@ -31,7 +31,7 @@ import com.ma.tehro.common.getLineColor
 import com.ma.tehro.common.timelineview.TimelineView
 import com.ma.tehro.common.timelineview.TimelineView.SingleNode
 import com.ma.tehro.common.toImageBitmap
-import com.ma.tehro.data.StationData
+import com.ma.tehro.data.Station
 import com.ma.tehro.ui.line.stations.StationItem
 import com.ma.tehro.ui.shortestpath.PathItem
 
@@ -68,7 +68,7 @@ fun PathFinder(
                 items = path,
                 key = { index, _ -> index }
             ) { index, item ->
-                val color = remember(index) {
+                val color = remember(index, colorLinePositions) {
                     getLineColor(isIndexInTheRange(index, colorLinePositions) ?: 0)
                 }
 
@@ -81,11 +81,11 @@ fun PathFinder(
                         )
                     }
 
-                    is PathItem.Station -> {
+                    is PathItem.StationItem -> {
                         StationRow(
                             modifier = Modifier
                                 .clickable { },
-                            stationData = item.data,
+                            station = item.data,
                             itemHeight = 76f,
                             lineColor = color,
                             isLastItem = index == path.size - 1
@@ -150,7 +150,7 @@ fun PinableTitle(
 @Composable
 fun StationRow(
     modifier: Modifier = Modifier,
-    stationData: StationData,
+    station: Station,
     itemHeight: Float,
     lineColor: Color,
     isLastItem: Boolean,
@@ -171,7 +171,7 @@ fun StationRow(
         )
         StationItem(
             modifier = Modifier.weight(1f),
-            station = stationData,
+            station = station,
             itemHeight = itemHeight,
             lineColor = lineColor
         )

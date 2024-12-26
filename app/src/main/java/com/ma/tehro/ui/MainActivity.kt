@@ -61,14 +61,14 @@ class MainActivity : ComponentActivity() {
                         val args = backStackEntry.toRoute<StationsScreen>()
                         Stations(
                             lineNumber = args.lineNumber,
-                            orderedStations = metroViewModel.getOrderedStationsByLine(args.lineNumber),
+                            orderedStations = metroViewModel.getOrderedStationsInLineByPosition(args.lineNumber),
                             onBackClick = { navController.popBackStack() }
                         )
                     }
                     animateComposable<StationSelectorScreen> { backStackEntry ->
                         val viewModel: ShortestPathViewModel = hiltViewModel(backStackEntry)
                         StationSelector(
-                            stations = viewModel.stations.map { it.value.property.name },
+                            stations = viewModel.stations.map { it.value.name },
                             onBack = { navController.popBackStack() },
                             viewState = viewModel.uiState.collectAsStateWithLifecycle().value,
                             onSelectedChange = { isFrom, query ->

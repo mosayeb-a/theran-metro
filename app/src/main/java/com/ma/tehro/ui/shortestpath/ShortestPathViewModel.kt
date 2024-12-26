@@ -3,7 +3,7 @@ package com.ma.tehro.ui.shortestpath
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import com.ma.tehro.common.getLineEndpoints
-import com.ma.tehro.data.StationData
+import com.ma.tehro.data.Station
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +14,7 @@ import javax.inject.Inject
 @Immutable
 sealed class PathItem {
     data class Title(val text: String) : PathItem()
-    data class Station(val data: StationData) : PathItem()
+    data class StationItem(val data: Station) : PathItem()
 }
 
 @Immutable
@@ -24,11 +24,10 @@ data class PathUiState(
     val selectedDestStation: String = "",
 )
 
-private const val TAG = "ShortestPathViewModel"
 
 @HiltViewModel
 class ShortestPathViewModel @Inject constructor(
-    val stations: Map<String, StationData>,
+    val stations: Map<String, Station>,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PathUiState())
@@ -105,10 +104,10 @@ class ShortestPathViewModel @Inject constructor(
 
         val directions = mutableListOf<PathItem>()
         var currentLine: Int? = null
-        var previousStation: StationData? = null
+        var previousStation: Station? = null
 
         val firstStation = stations[shortestPath.first()] ?: return emptyList()
-        directions.add(PathItem.Station(firstStation))
+        directions.add(PathItem.StationItem(firstStation))
 
         for (i in 0 until shortestPath.size - 1) {
             val currentStationName = shortestPath[i]
@@ -118,12 +117,12 @@ class ShortestPathViewModel @Inject constructor(
             val nextStation = stations[nextStationName] ?: continue
 
             val currentLinePosition =
-                currentStation.property.positionsInLine.firstOrNull { pos ->
-                    nextStation.property.positionsInLine.any { it.line == pos.line }
+                currentStation.positionsInLine.firstOrNull { pos ->
+                    nextStation.positionsInLine.any { it.line == pos.line }
                 } ?: continue
 
             val nextLinePosition =
-                nextStation.property.positionsInLine.first { it.line == currentLinePosition.line }
+                nextStation.positionsInLine.first { it.line == currentLinePosition.line }
 
             if (currentLine != currentLinePosition.line) {
                 currentLine = currentLinePosition.line
@@ -136,17 +135,18 @@ class ShortestPathViewModel @Inject constructor(
                 directions.add(PathItem.Title(direction))
 
                 if (previousStation != null) {
-                    directions.add(PathItem.Station(currentStation))
+                    directions.add(PathItem.StationItem(currentStation))
                 }
             }
 
-            if (previousStation == null || previousStation.property.name != nextStation.property.name) {
-                directions.add(PathItem.Station(nextStation))
+            if (previousStation == null || previousStation.name != nextStation.name) {
+                directions.add(PathItem.StationItem(nextStation))
             }
 
             previousStation = nextStation
         }
 
+        // todo quick fix
         if (directions.size > 1) {
             directions.swap(0, 1)
         }
@@ -155,7 +155,7 @@ class ShortestPathViewModel @Inject constructor(
     }
 
     private fun findShortestPath(
-        stations: Map<String, StationData>,
+        stations: Map<String, Station>,
         from: String,
         to: String
     ): List<String> {
@@ -172,8 +172,8 @@ class ShortestPathViewModel @Inject constructor(
 
             visited.add(current)
             val station = stations[current] ?: continue
-            station.relations.filter { !it.disabled }.forEach { relation ->
-                queue.add(path + relation.name)
+            station.relations.filter { stations[it]?.disabled != true }.forEach { relation ->
+                queue.add(path + relation)
             }
         }
         return emptyList()
