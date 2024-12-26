@@ -49,7 +49,7 @@ class ShortestPathViewModel @Inject constructor(
     }
 
 
-    fun getLineByPath(path: List<PathItem>): List<Pair<Int, Pair<Int, Int>>> {
+    private fun getLineByPath(path: List<PathItem>): List<Pair<Int, Pair<Int, Int>>> {
         val lines = mutableListOf<Pair<Int, Pair<Int, Int>>>()
         var currentLine: Int? = null
         var segmentStartIndex = 0

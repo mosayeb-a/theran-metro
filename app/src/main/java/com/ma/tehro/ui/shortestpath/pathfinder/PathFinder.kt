@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -49,14 +48,12 @@ fun PathFinder(
     var path by remember { mutableStateOf<List<PathItem>>(emptyList()) }
     var colorLinePositions by remember { mutableStateOf<List<Pair<Int, Pair<Int, Int>>>>(emptyList()) }
 
-    LaunchedEffect(path) {
+    LaunchedEffect(from, to) {
         if (path.isEmpty()) {
             path = findShortestPath()
             colorLinePositions = getLineByPath(path)
         }
     }
-
-    val listState = rememberLazyListState()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.primary,
@@ -66,14 +63,14 @@ fun PathFinder(
     ) { padding ->
         LazyColumn(
             modifier = modifier.padding(padding),
-            state = listState,
         ) {
             itemsIndexed(
                 items = path,
                 key = { index, _ -> index }
             ) { index, item ->
-                val color =
-                    remember { getLineColor(isIndexInTheRange(index, colorLinePositions) ?: 0) }
+                val color = remember(index) {
+                    getLineColor(isIndexInTheRange(index, colorLinePositions) ?: 0)
+                }
 
                 when (item) {
                     is PathItem.Title -> {
