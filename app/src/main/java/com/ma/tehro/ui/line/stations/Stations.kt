@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import com.ma.tehro.R
 import com.ma.tehro.common.Appbar
-import com.ma.tehro.common.getLineColor
-import com.ma.tehro.common.getLineEndpoints
+import com.ma.tehro.common.calculateLineName
+import com.ma.tehro.common.getLineColorByNumber
 import com.ma.tehro.common.timelineview.TimelineView
 import com.ma.tehro.common.timelineview.TimelineView.SingleNode
 import com.ma.tehro.data.Station
@@ -43,82 +43,65 @@ import com.ma.tehro.data.Station
 fun Stations(
     lineNumber: Int,
     orderedStations: List<Station>,
-    onBackClick: () -> Unit = {},
+    onBackClick: () -> Unit,
+    onStationClick: (station: Station, lineNumber: Int) -> Unit
 ) {
-    val lineColor = remember { getLineColor(lineNumber) }
-    val endpoint = remember { getLineEndpoints() }
-
+    val lineColor = remember { getLineColorByNumber(lineNumber) }
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp
+    val itemHeight =
+        ((screenHeight / (orderedStations.size + 1).coerceAtLeast(1)) * 2.4f)
+            .coerceAtLeast(72f)
+    val lineName = remember(lineNumber) { calculateLineName(lineNumber) }
     Scaffold(
-        containerColor = Color.Transparent,
         topBar = {
             Appbar(
-                title = "Line $lineNumber - ${endpoint[lineNumber]?.first}/${endpoint[lineNumber]?.second}",
+                title = lineName,
                 handleBack = true,
                 onBackClick = onBackClick
             )
         }) {
-        StationList(
-            modifier = Modifier.padding(it),
-            stations = orderedStations,
-            lineColor = lineColor
-        )
-    }
-}
-
-@Composable
-fun StationList(
-    modifier: Modifier = Modifier,
-    stations: List<Station>,
-    lineColor: Color
-) {
-    val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp
-
-    val itemHeight =
-        ((screenHeight / (stations.size + 1).coerceAtLeast(1)) * 2.4f)
-            .coerceAtLeast(72f)
-    LazyColumn(
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
-        itemsIndexed(
-            stations,
-            key = { _, station -> station.name }) { index, station ->
-
-            val nodeType = when (index) {
-                0 -> TimelineView.NodeType.FIRST
-                stations.size - 1 -> TimelineView.NodeType.LAST
-                else -> TimelineView.NodeType.MIDDLE
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(itemHeight.dp)
-                    .background(lineColor)
-                    .clickable { }
-            ) {
-                SingleNode(
-                    modifier = Modifier.padding(start = 16.dp),
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = .8f),
-                    nodeType = nodeType,
-                    nodeSize = 20f,
-                    isChecked = true,
-                    lineWidth = .8f
-                )
-
-
-                StationItem(
+        LazyColumn(
+            modifier = Modifier
+                .padding(it)
+                .fillMaxWidth()
+        ) {
+            itemsIndexed(
+                orderedStations,
+                key = { _, station -> station.name }
+            ) { index, station ->
+                val nodeType = when (index) {
+                    0 -> TimelineView.NodeType.FIRST
+                    orderedStations.size - 1 -> TimelineView.NodeType.LAST
+                    else -> TimelineView.NodeType.MIDDLE
+                }
+                Row(
                     modifier = Modifier
-                        .weight(1f),
-                    station = station,
-                    itemHeight = itemHeight,
-                    lineColor = lineColor,
-                )
-            }
+                        .fillMaxWidth()
+                        .height(itemHeight.dp)
+                        .background(lineColor)
+                        .clickable { onStationClick(station, lineNumber) }
+                ) {
+                    SingleNode(
+                        modifier = Modifier.padding(start = 16.dp),
+                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = .8f),
+                        nodeType = nodeType,
+                        nodeSize = 20f,
+                        isChecked = true,
+                        lineWidth = .8f
+                    )
+                    StationItem(
+                        modifier = Modifier
+                            .weight(1f),
+                        station = station,
+                        itemHeight = itemHeight,
+                        lineColor = lineColor,
+                    )
+                }
 
-            if (index < stations.size - 1) {
-                HorizontalDivider(thickness = .28.dp)
+                if (index < orderedStations.size - 1) {
+                    HorizontalDivider(thickness = .28.dp)
+                }
             }
         }
     }

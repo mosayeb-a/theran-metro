@@ -31,7 +31,7 @@ import androidx.navigation.NavHostController
 import com.ma.tehro.R
 import com.ma.tehro.common.Appbar
 import com.ma.tehro.common.StationsScreen
-import com.ma.tehro.common.getLineColor
+import com.ma.tehro.common.getLineColorByNumber
 import com.ma.tehro.common.getLineEndpoints
 
 @Composable
@@ -72,7 +72,7 @@ fun Lines(
                 println("itemHeight: $itemHeight")
                 LineItem(
                     lineNumber = line,
-                    lineColor = getLineColor(line),
+                    lineColor = getLineColorByNumber(line),
                     onClick = { navController.navigate(StationsScreen(line)) },
                     itemHeight = itemHeight
                 )

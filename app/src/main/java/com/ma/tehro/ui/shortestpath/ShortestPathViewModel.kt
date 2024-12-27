@@ -14,7 +14,7 @@ import javax.inject.Inject
 @Immutable
 sealed class PathItem {
     data class Title(val text: String) : PathItem()
-    data class StationItem(val data: Station) : PathItem()
+    data class StationItem(val station: Station) : PathItem()
 }
 
 @Immutable

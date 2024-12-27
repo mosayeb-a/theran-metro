@@ -27,7 +27,8 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.ma.tehro.R
-import com.ma.tehro.common.getLineColor
+import com.ma.tehro.common.getLineColorByNumber
+import com.ma.tehro.common.getLineNumberByColor
 import com.ma.tehro.common.timelineview.TimelineView
 import com.ma.tehro.common.timelineview.TimelineView.SingleNode
 import com.ma.tehro.common.toImageBitmap
@@ -43,7 +44,8 @@ fun PathFinder(
     findShortestPath: () -> List<PathItem>,
     onBack: () -> Unit,
     getLineByPath: (path: List<PathItem>) -> List<Pair<Int, Pair<Int, Int>>>,
-    isIndexInTheRange: (index: Int, lineAndTitlePosition: List<Pair<Int, Pair<Int, Int>>>) -> Int?
+    isIndexInTheRange: (index: Int, lineAndTitlePosition: List<Pair<Int, Pair<Int, Int>>>) -> Int?,
+    onStationClick: (station: Station, lineNumber: Int) -> Unit
 ) {
     var path by remember { mutableStateOf<List<PathItem>>(emptyList()) }
     var colorLinePositions by remember { mutableStateOf<List<Pair<Int, Pair<Int, Int>>>>(emptyList()) }
@@ -69,7 +71,7 @@ fun PathFinder(
                 key = { index, _ -> index }
             ) { index, item ->
                 val color = remember(index, colorLinePositions) {
-                    getLineColor(isIndexInTheRange(index, colorLinePositions) ?: 0)
+                    getLineColorByNumber(isIndexInTheRange(index, colorLinePositions) ?: 0)
                 }
 
                 when (item) {
@@ -83,16 +85,15 @@ fun PathFinder(
 
                     is PathItem.StationItem -> {
                         StationRow(
-                            modifier = Modifier
-                                .clickable { },
-                            station = item.data,
+                            modifier = Modifier.clickable {
+                                onStationClick(item.station, getLineNumberByColor(color))
+                            },
+                            station = item.station,
                             itemHeight = 76f,
                             lineColor = color,
                             isLastItem = index == path.size - 1
                         )
-
                         HorizontalDivider(thickness = .28.dp)
-
                     }
                 }
             }
