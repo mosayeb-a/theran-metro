@@ -13,10 +13,13 @@ The aim of this project is to facilitate the use of the Tehran Metro by providin
 ## Screenshots
 Here are some screenshots of the app in action:
 
+## Screenshots
+Here are some screenshots of the app in action:
+
 <div style="display: flex; justify-content: space-between;">
-  <img src="https://github.com/user-attachments/assets/ec4e64b3-7511-459b-b045-2dc3a452bc77" alt="Shortest Path" width="20%" />
-  <img src="https://github.com/user-attachments/assets/96873a8c-c0c6-4f0a-87f2-294a655a2c90" alt="Lines" width="20%" />
-  <img src="https://github.com/user-attachments/assets/23ec8294-a44b-4582-afe3-8e336adbd7e0" alt="Stations Selector" width="20%" />
+  <img src="https://github.com/user-attachments/assets/e9761203-4f79-43ba-90fb-4e22c95b0b7c" alt="screen1" width="25%" />
+  <img src="https://github.com/user-attachments/assets/96873a8c-c0c6-4f0a-87f2-294a655a2c90" alt="Lines" width="25%" />
+  <img src="https://github.com/user-attachments/assets/23ec8294-a44b-4582-afe3-8e336adbd7e0" alt="Stations Selector" width="25%" />
 </div>
 
 
